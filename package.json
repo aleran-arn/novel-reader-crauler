@@ -1,0 +1,17 @@
+{
+  "name": "crauler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "run.js",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/storage-blob": "^12.2.0",
+    "@novelreader/core": "file:../core",
+    "cheerio": "^1.0.0-rc.3",
+    "got": "^11.6.1"
+  }
+}

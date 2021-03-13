@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@azure/storage-blob": "^12.2.0",
-    "@novelreader/core": "file:../core",
+    "@novelreader/core": "file:../novel-reader-core",
     "cheerio": "^1.0.0-rc.3",
+    "cron": "^1.8.2",
     "got": "^11.6.1"
   }
 }

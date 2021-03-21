@@ -1,1 +1,1 @@
-*/5 * * * * pgrep -cx node || ps node /home/arnold/novel-reader-craauler/crauler.js > /var/log/novel/crauler.log 2>&1
+*/5 * * * * pgrep -cx node || ps node /home/arnold/novel-reader-craauler/crauler.js > /home/arnold/novel-reader-craauler/crauler.log 2>&1

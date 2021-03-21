@@ -9,6 +9,8 @@ const Chapter = require('../novel-reader-core/model/Chapter');
 const chapterIdRegexp = new RegExp('chapter-(\\d+)-?');
 const maxPage = 10;
 
+run()
+
 async function run() {
 	const mongo = await db.dbConnection;
 	try {

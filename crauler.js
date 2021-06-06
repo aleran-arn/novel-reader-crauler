@@ -4,8 +4,8 @@ const got = require('got');
 const cheerio = require('cheerio');
 const db = require('@novelreader/core/index');
 
-const Novel = require('../novel-reader-core/model/Novel');
-const Chapter = require('../novel-reader-core/model/Chapter');
+const Novel = require('@novelreader/core/model/Novel');
+const Chapter = require('@novelreader/core/model/Chapter');
 const chapterIdRegexp = new RegExp('chapter-(\\d+)-?');
 const maxPage = 10;
 

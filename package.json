@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+<<<<<<< HEAD
     "@azure/storage-blob": "^12.2.0",
     "cheerio": "^1.0.0-rc.3",
     "got": "^11.6.1",
@@ -23,5 +24,11 @@
   ],
   "devDependencies": {
     "npm-pack-zip": "^1.2.7"
+=======
+    "@novelreader/core": "file:../novel-reader-core",
+    "cheerio": "^1.0.0-rc.3",
+    "cron": "^1.8.2",
+    "got": "^11.6.1"
+>>>>>>> 89303d00975da8d9ecde4316f0ea0a33a9e7969d
   }
 }

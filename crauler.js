@@ -2,30 +2,20 @@ const util = require('util');
 const conf = require('./config/conf');
 const got = require('got');
 const cheerio = require('cheerio');
-const mongoose = require('mongoose');
-const { BlobServiceClient } = require('@azure/storage-blob');
+const db = require('@novelreader/core/index');
 
-const Novel = require('./model/Novel');
-const Chapter = require('./model/Chapter');
-const chapterIdRegexp = new RegExp('.*\\/(.+).html');
-const maxPage = 5;
-
-const blobServiceClient = BlobServiceClient.fromConnectionString(conf.azureStoregeUrl);
-// Get a reference to a container
-const containerClient = blobServiceClient.getContainerClient(conf.azureStorageCoverContainer);
+const Novel = require('../novel-reader-core/model/Novel');
+const Chapter = require('../novel-reader-core/model/Chapter');
+const chapterIdRegexp = new RegExp('chapter-(\\d+)-?');
+const maxPage = 10;
 
 run();
 
 async function run() {
-	const options = { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true };
-	const connection = await mongoose.connect(conf.mongoUrl, options);
-	const pageArray = [];
-	for (let index = maxPage; index >= 0; index--) {
-		pageArray.push(index);
-	}
+	const mongo = await db.dbConnection;
 	try {
-		for (const page of pageArray) {
-			const loadResult = await got(conf.novelreader + util.format(conf.lastNovelReaderPath, page), { timeout: 10000 });
+		for (const page of Array(maxPage).keys()) {
+			const loadResult = await got(conf.novelreader + util.format(conf.lastNovelReaderPath, page), { timeout: 50000 });
 			const $ = cheerio.load(loadResult.body);
 			for (const element of $('div.col-truyen-main div.row').toArray().reverse()) {
 				const novelHref = $(element).find('.truyen-title a').attr('href');
@@ -33,6 +23,10 @@ async function run() {
 					throw new Error("novelHref not found");
 				}
 				const chapterHref = $(element).find('.text-info a').attr('href');
+				if (chapterHref == null) {
+					console.log("element " + element);
+					throw new Error("null href");
+                }
 				const chapterTitle = $(element).find('.text-info span').text();
 				const chapterId = getChapterId(chapterHref);
 				if (chapterId == null) {
@@ -73,19 +67,16 @@ async function saveNovel(novelId, novelHref, chapterTitle, chapterId, chapterHre
 }
 
 async function fillNovelData(novel, novelHref) {
-	const loadPage = await got(conf.novelreader + novelHref, { timeout: 10000 });
+	const loadPage = await got(conf.novelreader + novelHref, { timeout: 50000 });
 	const $ = cheerio.load(loadPage.body);
 	const title = $('div.books .title').text();
 	const description = $('div.desc-text').text();
 	const coverHref = $('div.books img').attr('src');
 
-	const loadCover = await got(conf.novelreader + coverHref, { timeout: 10000, responseType: 'buffer' });
-	const saveCoverResponse = await containerClient.uploadBlockBlob(novel.novelId + ".jpg", loadCover.body, loadCover.body.length,
-		{ blobHTTPHeaders: { blobContentType: loadCover.headers["content-type"] } });
-	if (saveCoverResponse.response.requestId == null) {
-		throw new Error("cover not saved");
-	}
-	novel.coverHref = conf.azureStorageAccessUrl + '/' + conf.azureStorageCoverContainer + '/' + novel.novelId + ".jpg";
+	const loadCover = await got(conf.novelreader + coverHref, { timeout: 50000, responseType: 'buffer' });
+	novel.coverImage.data = loadCover.body;
+	novel.coverImage.contentType = loadCover.headers["content-type"];
+
 	novel.title = title;
 	novel.description = description;
 }
@@ -157,7 +148,7 @@ async function loadNovelChapters(dbNovel, chapterId, chapterTitle, chapterHref) 
 async function loadChapter(novelId, chapterId, chapterHref) {
 	const chapter = new Chapter();
 
-	const loadChapter = await got(conf.novelreader + chapterHref, { timeout: 10000 });
+	const loadChapter = await got(conf.novelreader + chapterHref, { timeout: 50000 });
 	const $ = cheerio.load(loadChapter.body);
 	const chapterTitle = $('a.chapter-title').text();
 	const prevChapterHref = $('a#prev_chap').length == 0 ? null : $('a#prev_chap').attr('href');

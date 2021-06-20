@@ -6,7 +6,6 @@ const db = require('@novelreader/core/index');
 
 const Novel = require('@novelreader/core/model/Novel');
 const Chapter = require('@novelreader/core/model/Chapter');
-const chapterIdRegexp = new RegExp('chapter-(\\d+)-?');
 const maxPage = 10;
 
 run();
@@ -83,7 +82,7 @@ async function fillNovelData(novel, novelHref) {
 
 async function loadNovelChapters(dbNovel, chapterId, chapterTitle, chapterHref) {
 	if (chapterId == null) {
-		throw new Error("chapterNumber not found");
+		throw new Error("chapterId not found");
 	}
 
 	const chapterIds = await Chapter.getNovelChapterIds(dbNovel.novelId);
@@ -179,7 +178,7 @@ function getChapterId(chapterHref) {
 	if (chapterHref == null) {
 		return null;
 	}
-	return chapterHref.match(chapterIdRegexp)[1];
+	return href.replace("/", "").replace(".html", "");
 }
 
 function getNovelIdFromHref(href) {

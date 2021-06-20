@@ -178,7 +178,7 @@ function getChapterId(chapterHref) {
 	if (chapterHref == null) {
 		return null;
 	}
-	return href.replace("/", "").replace(".html", "");
+	return chapterHref.replace("/", "").replace(".html", "");
 }
 
 function getNovelIdFromHref(href) {
